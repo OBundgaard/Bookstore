@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contexts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Bookstore.Core\Bookstore.Core.csproj" />
   </ItemGroup>
 
