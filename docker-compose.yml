@@ -1,0 +1,48 @@
+services:
+    api:
+        build:
+            context: .
+            dockerfile: Bookstore.Infrastructure/API/Dockerfile
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=5000
+        ports:
+            - "5000:5000"
+            - "5001:5001"
+        volumes:
+            - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+            - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+        networks:
+            - bookstore-network
+        depends_on:
+            - mysql
+            - redis
+    
+    mysql:
+        image: mysql:latest 
+        container_name: mysqldb
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: iLuvData4ever<3
+          MYSQL_DATABASE: bookstore
+          MYSQL_USER: sa
+          MYSQL_PASSWORD: iLuvData4ever<3
+        ports:
+          - "3306:3306"  
+        volumes:
+          - ./mysql-data:/var/lib/mysql
+    
+    redis:
+        image: redis:latest
+        container_name: redisdb
+        restart: always
+        ports:
+          - "6379:6379"
+        volumes:
+          - ./redis-data:/data
+        networks:
+          - bookstore-network
+
+networks:
+    bookstore-network:
+        driver: bridge
