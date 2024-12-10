@@ -1,4 +1,5 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Repositories;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,35 +7,55 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class OrderController : Controller
+public class OrderController(IRelationalRepository<Order> orderRepository) : Controller
 {
     [HttpPost("post")]
-    public ActionResult<Order> Post([FromBody] Order entry)
+    public async Task<ActionResult<Order>> Post([FromBody] Order entry)
     {
-        throw new NotImplementedException();
+        var createdOrder = await orderRepository.Post(entry);
+        return Ok(createdOrder);
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<Order> Get(int id)
+    public async Task<ActionResult<Order>> Get(int id)
     {
-        throw new NotImplementedException();
+        var order = await orderRepository.Get(id);
+
+        if (order == null)
+            return NotFound();
+
+        return Ok(order);
     }
 
     [HttpGet("getall")]
-    public ActionResult<IEnumerable<Order>> GetAll()
+    public async Task<ActionResult<IEnumerable<Order>>> GetAll()
     {
-        throw new NotImplementedException();
+        var orders = await orderRepository.GetAll();
+        return Ok(orders);
     }
 
     [HttpPut("put/{id}")]
-    public ActionResult<Order> Put(int id, [FromBody] Order entry)
+    public async Task<ActionResult<Order>> Put(int id, [FromBody] Order entry)
     {
-        throw new NotImplementedException();
+        if (id != entry.OrderID)
+            return BadRequest();
+
+        var existingOrder = await orderRepository.Get(id);
+        if (existingOrder == null)
+            return NotFound();
+
+        var updatedOrder = await orderRepository.Put(entry);
+        return Ok(updatedOrder);
     }
 
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var existingOrder = await orderRepository.Get(id);
+        if (existingOrder == null)
+            return NotFound();
+
+        await orderRepository.Delete(id);
+        return NoContent();
     }
 }
