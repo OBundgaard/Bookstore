@@ -6,35 +6,51 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController : Controller
+public class CustomerController(IRelationalRepository<Customer> relationalRepository) : Controller
 {
     [HttpPost("post")]
-    public ActionResult<Customer> Post([FromBody] Customer entry)
+    public async Task<ActionResult<Customer>> Post([FromBody] Customer entry)
     {
-        throw new NotImplementedException();
+        var createdCustomer = await relationalRepository.Post(entry);
+        return Ok(createdCustomer);
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<Customer> Get(int id)
+    public async Task<ActionResult<Customer>> Get(int id)
     {
-        throw new NotImplementedException();
+        var customer = await relationalRepository.Get(id);
+        if (customer == null)
+            return NotFound();
+        return Ok(customer);
     }
 
     [HttpGet("getall")]
-    public ActionResult<IEnumerable<Customer>> GetAll()
+    public async  Task<ActionResult<IEnumerable<Customer>>> GetAll()
     {
-        throw new NotImplementedException();
+        var customers = await relationalRepository.GetAll();
+        return Ok(customers);
     }
 
     [HttpPut("put/{id}")]
-    public ActionResult<Customer> Put(int id, [FromBody] Customer entry)
+    public async  Task<ActionResult<Customer>> Put(int id, [FromBody] Customer entry)
     {
-        throw new NotImplementedException();
+        if (id != entry.CustomerID)
+            return BadRequest();
+        var existingCustomer = await relationalRepository.Get(id);
+        if (existingCustomer == null)
+            return NotFound();
+        var updatedCustomer = await relationalRepository.Put(entry);
+        return Ok(updatedCustomer);
     }
 
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var existingCustomer = await relationalRepository.Get(id);
+        if (existingCustomer == null)
+            return NotFound();
+
+        await relationalRepository.Delete(id);
+        return NoContent();
     }
 }
