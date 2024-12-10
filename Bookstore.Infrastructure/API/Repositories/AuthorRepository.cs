@@ -1,33 +1,43 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Contexts;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
 
 namespace API.Repositories;
 
 public class AuthorRepository : INoSQLRepository<Author>
 {
+    private readonly NoSQLDbContext db;
 
-    public Author Post(Author entry)
+    public AuthorRepository(NoSQLDbContext context)
+    {
+        db = context;
+    }
+
+    public async Task<Author> Post(Author entry)
+    {
+        await db.SetAsync($"Authors:{entry.AuthorID.ToString()}", entry.AuthorName);
+        return entry;
+    }
+
+    public async Task<Author> Get(string key)
+    {
+        var author = await db.GetAsync<Author>($"Authors:{key}");
+        return author;
+    }
+
+    public async Task<IEnumerable<Author>> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public Author Get(string key)
+    public async Task<Author> Put(Author entry)
     {
-        throw new NotImplementedException();
+        await db.SetAsync($"Authors:{entry.AuthorID.ToString()}", entry.AuthorName);
+        return entry;
     }
 
-    public IEnumerable<Author> GetAll()
+    public async Task Delete(string key)
     {
-        throw new NotImplementedException();
-    }
-
-    public Author Put(Author entry)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(string key)
-    {
-        throw new NotImplementedException();
+        await db.DeleteAsync($"Authors:{key}");
     }
 }

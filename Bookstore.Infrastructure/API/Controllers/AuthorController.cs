@@ -1,4 +1,5 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Repositories;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,18 +7,24 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthorController : Controller
+public class AuthorController(INoSQLRepository<Author> authorRepository) : Controller
 {
     [HttpPost("post")]
-    public ActionResult<Author> Post([FromBody] Author entry)
+    public async Task<ActionResult<Author>> Post([FromBody] Author entry)
     {
-        throw new NotImplementedException();
+        var createdAuthor = await authorRepository.Post(entry);
+        return Ok(createdAuthor);
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<Author> Get(int id)
+    public async Task<ActionResult<Author>> Get(int id)
     {
-        throw new NotImplementedException();
+        var author = await authorRepository.Get(id.ToString());
+
+        if (author == null)
+            return NotFound();
+
+        return Ok(author);
     }
 
     [HttpGet("getall")]
@@ -27,14 +34,27 @@ public class AuthorController : Controller
     }
 
     [HttpPut("put/{id}")]
-    public ActionResult<Author> Put(int id, [FromBody] Author entry)
+    public async Task<ActionResult<Author>> Put(int id, [FromBody] Author entry)
     {
-        throw new NotImplementedException();
+        if (id != entry.AuthorID)
+            return BadRequest();
+
+        var existingAuthor = await authorRepository.Get(id.ToString());
+        if (existingAuthor == null)
+            return NotFound();
+
+        var updatedAuthor = await authorRepository.Put(entry);
+        return Ok(updatedAuthor);
     }
 
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var existingAuthor = await authorRepository.Get(id.ToString());
+        if (existingAuthor == null)
+            return NotFound();
+
+        await authorRepository.Delete(id.ToString());
+        return NoContent();
     }
 }
