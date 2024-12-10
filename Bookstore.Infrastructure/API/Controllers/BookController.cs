@@ -6,35 +6,55 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BookController : Controller
+public class BookController(IRelationalRepository<Book> bookRepository) : Controller
 {
     [HttpPost("post")]
-    public ActionResult<Book> Post([FromBody] Book entry)
+    public async Task<ActionResult<Book>> Post([FromBody] Book entry)
     {
-        throw new NotImplementedException();
+        var createdBook = await bookRepository.Post(entry);
+        return Ok(createdBook);
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<Book> Get(int id)
+    public async Task<ActionResult<Book>> Get(int id)
     {
-        throw new NotImplementedException();
+        var book = await bookRepository.Get(id);
+
+        if (book == null)
+            return NotFound();
+
+        return Ok(book);
     }
 
     [HttpGet("getall")]
     public ActionResult<IEnumerable<Book>> GetAll()
     {
-        throw new NotImplementedException();
+        var books = bookRepository.GetAll();
+        return Ok(books);
     }
 
     [HttpPut("put/{id}")]
-    public ActionResult<Book> Put(int id, [FromBody] Book entry)
+    public async Task<ActionResult<Book>> Put(int id, [FromBody] Book entry)
     {
-        throw new NotImplementedException();
+        if (id != entry.BookID)
+            return BadRequest();
+
+        var existingBook = await bookRepository.Get(id);
+        if (existingBook == null)
+            return NotFound();
+
+        var updatedBook = await bookRepository.Put(entry);
+        return Ok(updatedBook);
     }
 
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var existingBook = await bookRepository.Get(id);
+        if (existingBook == null)
+            return NotFound();
+
+        await bookRepository.Delete(id);
+        return NoContent();
     }
 }
