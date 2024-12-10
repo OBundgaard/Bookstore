@@ -1,32 +1,50 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Contexts;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 namespace API.Repositories;
 
 public class BookRepository : IRelationalRepository<Book>
 {
-    public Book Post(Book entry)
+    private readonly RelationalDbContext _context;
+    public BookRepository(RelationalDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+    public async Task<Book> Post(Book entry)
+    {
+       await _context.Books.AddAsync(entry);
+       await _context.SaveChangesAsync();
+        return entry;
     }
 
-    public Book Get(int id)
+    public async Task<Book> Get(int id)
     {
-        throw new NotImplementedException();
+       var book = await _context.Books.FindAsync(id);
+       return book;
     }
 
-    public IEnumerable<Book> GetAll()
+    public async Task<IEnumerable<Book>> GetAll()
     {
-        throw new NotImplementedException();
+        var books = await _context.Books.ToListAsync();
+        return books;
     }
 
-    public Book Put(Book entry)
+    public async Task<Book> Put(Book entry)
     {
-        throw new NotImplementedException();
+        _context.Update(entry);
+        await _context.SaveChangesAsync();
+        return entry;
     }
 
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        throw new NotImplementedException();
+        var book = await _context.Books.FindAsync(id);
+        if (book == null)
+            throw new KeyNotFoundException($"Book with ID {id} not found.");
+        _context.Books.Remove(book);
+        await _context.SaveChangesAsync();
     }
 }

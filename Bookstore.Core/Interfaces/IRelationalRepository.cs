@@ -4,9 +4,9 @@ namespace Bookstore.Core.Interfaces;
 
 public interface IRelationalRepository<T>
 {
-    Task Post(T entry);
-    Task Get(int id);
+    Task<T> Post(T entry);
+    Task<T> Get(int id);
     Task<IEnumerable<T>> GetAll();
-    Task Put(T entry);
+    Task<T> Put(T entry);
     Task Delete(int id);
 }
