@@ -28,9 +28,10 @@ public class AuthorController(INoSQLRepository<Author> authorRepository) : Contr
     }
 
     [HttpGet("getall")]
-    public ActionResult<IEnumerable<Author>> GetAll()
+    public async Task<ActionResult<IEnumerable<Author>>> GetAll()
     {
-        throw new NotImplementedException();
+        var authors = await authorRepository.GetAll();
+        return Ok(authors);
     }
 
     [HttpPut("put/{id}")]

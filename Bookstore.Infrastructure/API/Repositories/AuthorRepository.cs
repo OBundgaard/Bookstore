@@ -27,7 +27,8 @@ public class AuthorRepository : INoSQLRepository<Author>
 
     public async Task<IEnumerable<Author>> GetAll()
     {
-        throw new NotImplementedException();
+        var authors = await db.GetAllAsync<Author>("Authors:");
+        return authors;
     }
 
     public async Task<Author> Put(Author entry)
