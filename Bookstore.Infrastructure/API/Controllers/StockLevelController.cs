@@ -6,35 +6,56 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class StockLevelController : Controller
+public class StockLevelController(INoSQLRepository<StockLevel> stockLevelRepository) : Controller
 {
     [HttpPost("post")]
-    public ActionResult<StockLevel> Post([FromBody] StockLevel entry)
+    public async Task<ActionResult<StockLevel>> Post([FromBody] StockLevel entry)
     {
-        throw new NotImplementedException();
+        var createdStockLevel = await stockLevelRepository.Post(entry);
+        return Ok(createdStockLevel);
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<StockLevel> Get(int id)
+    public async Task<ActionResult<StockLevel>> Get(int id)
     {
-        throw new NotImplementedException();
+        var stockLevel = await stockLevelRepository.Get(id.ToString());
+
+        if (stockLevel == null)
+            return NotFound();
+
+        return Ok(stockLevel);
     }
 
     [HttpGet("getall")]
-    public ActionResult<IEnumerable<StockLevel>> GetAll()
+    public async Task<ActionResult<IEnumerable<StockLevel>>> GetAll()
     {
-        throw new NotImplementedException();
+        var stockLevels = await stockLevelRepository.GetAll();
+        return Ok(stockLevels);
     }
 
     [HttpPut("put/{id}")]
-    public ActionResult<StockLevel> Put(int id, [FromBody] StockLevel entry)
+    public async Task<ActionResult<StockLevel>> Put(int id, [FromBody] StockLevel entry)
     {
-        throw new NotImplementedException();
+        if (id != entry.BookID)
+            return BadRequest();
+
+        var existingStockLevel = await stockLevelRepository.Get(id.ToString());
+        if (existingStockLevel == null)
+            return NotFound();
+
+        var updatedStockLevel = await stockLevelRepository.Put(entry);
+        return Ok(updatedStockLevel);
+
     }
 
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        throw new NotImplementedException();
+        var existingStockLevel = await stockLevelRepository.Get(id.ToString());
+        if (existingStockLevel == null)
+            return NotFound();
+
+        await stockLevelRepository.Delete(id.ToString());
+        return NoContent();
     }
 }

@@ -27,6 +27,19 @@ public class NoSQLDbContext : IDisposable
             : default;
     }
 
+    public async Task<IEnumerable<T>> GetAllAsync<T>(string prefix)
+    {
+        var server = _connection.GetServer(_connection.GetEndPoints().First());
+        var keys = server.Keys(pattern: $"{prefix}:*").ToArray();
+
+        if (!keys.Any())
+            return Enumerable.Empty<T>();
+
+        var tasks = keys.Select(key => GetAsync<T>(key.ToString()));
+        return await Task.WhenAll(tasks);
+    }
+
+
     public async Task<bool> DeleteAsync(string key)
     {
         return await Database.KeyDeleteAsync(key);

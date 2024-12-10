@@ -1,32 +1,47 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Contexts;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
+using System.Runtime.InteropServices;
 
 namespace API.Repositories;
 
 public class StockLevelRepository : INoSQLRepository<StockLevel>
 {
-    public StockLevel Post(StockLevel value)
+    private readonly NoSQLDbContext _context;
+    private readonly string _collectionKey;
+
+    public StockLevelRepository(NoSQLDbContext context, string collectionKey)
     {
-        throw new NotImplementedException();
+        _context = context;
+        _collectionKey = collectionKey;
     }
 
-    public StockLevel Get(string key)
+    public async Task<StockLevel> Post(StockLevel entry)
     {
-        throw new NotImplementedException();
+        await _context.SetAsync($"{_collectionKey}:{entry}", entry);
+        return entry;
     }
 
-    public IEnumerable<StockLevel> GetAll()
+    public async Task<StockLevel> Get(string key)
     {
-        throw new NotImplementedException();
+        var stockLevels = await _context.GetAsync<StockLevel>($"{_collectionKey}:{key}");
+        return stockLevels;
     }
 
-    public StockLevel Put(StockLevel value)
+    public async Task<IEnumerable<StockLevel>> GetAll()
     {
-        throw new NotImplementedException();
+        var stockLevelCollection = await _context.GetAllAsync<StockLevel>(_collectionKey);
+        return stockLevelCollection;
     }
 
-    public void Delete(string key)
+    public async Task<StockLevel> Put(StockLevel entry)
     {
-        throw new NotImplementedException();
+        await _context.SetAsync($"{_collectionKey}:{entry}", entry);
+        return entry;
+    }
+
+    public async Task Delete(string key)
+    {
+        await _context.DeleteAsync($"{_collectionKey}:{key}");
     }
 }
