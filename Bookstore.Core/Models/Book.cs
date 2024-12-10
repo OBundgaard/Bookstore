@@ -15,8 +15,6 @@ public class Book
     [Required]
     public string? Description { get; set; }
 
-    [ForeignKey("Author")]
     [Required]
     public int AuthorID { get; set; }
-    public Author? Author { get; set; }
 }
