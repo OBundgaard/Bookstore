@@ -1,32 +1,52 @@
-﻿using Bookstore.Core.Interfaces;
+﻿using API.Contexts;
+using Bookstore.Core.Interfaces;
 using Bookstore.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories;
 
 public class OrderRepository : IRelationalRepository<Order>
 {
-    public Order Post(Order entry)
+    private readonly RelationalDbContext db;
+
+    public OrderRepository(RelationalDbContext context)
     {
-        throw new NotImplementedException();
+        db = context;
     }
 
-    public Order Get(int id)
+    public async Task<Order> Post(Order entry)
     {
-        throw new NotImplementedException();
+        await db.Orders.AddAsync(entry);
+        await db.SaveChangesAsync();
+        return entry;
     }
 
-    public IEnumerable<Order> GetAll()
+    public async Task<Order> Get(int id)
     {
-        throw new NotImplementedException();
+        var order = await db.Orders.FindAsync(id);
+        return order;
     }
 
-    public Order Put(Order entry)
+    public async Task<IEnumerable<Order>> GetAll()
     {
-        throw new NotImplementedException();
+        var orders = await db.Orders.ToListAsync();
+        return orders;
     }
 
-    public void Delete(int id)
+    public async Task<Order> Put(Order entry)
     {
-        throw new NotImplementedException();
+        db.Orders.Update(entry);
+        await db.SaveChangesAsync();
+        return entry;
+    }
+
+    public async Task Delete(int id)
+    {
+        var order = await db.Orders.FindAsync(id);
+        if (order == null)
+            throw new KeyNotFoundException($"Order with ID {id} not found.");
+
+        db.Orders.Remove(order);
+        await db.SaveChangesAsync();
     }
 }

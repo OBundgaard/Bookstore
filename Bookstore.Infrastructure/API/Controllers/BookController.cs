@@ -27,9 +27,9 @@ public class BookController(IRelationalRepository<Book> bookRepository) : Contro
     }
 
     [HttpGet("getall")]
-    public ActionResult<IEnumerable<Book>> GetAll()
+    public async Task<ActionResult<IEnumerable<Book>>> GetAll()
     {
-        var books = bookRepository.GetAll();
+        var books = await bookRepository.GetAll();
         return Ok(books);
     }
 
