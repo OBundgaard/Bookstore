@@ -4,9 +4,9 @@ namespace Bookstore.Core.Interfaces;
 
 public interface INoSQLRepository<T>
 {
-    T Post(T entry);
-    T Get(string key);
-    IEnumerable<T> GetAll();
-    T Put(T entry);
-    void Delete(string key);
+    Task Post(T entry);
+    Task Get(string key);
+    Task<IEnumerable<T>> GetAll();
+    Task Put(T entry);
+    Task Delete(string key);
 }
