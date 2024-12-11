@@ -15,22 +15,20 @@ services:
         networks:
             - bookstore-network
         depends_on:
-            - mysql
+            - mssql
             - redis
     
-    mysql:
-        image: mysql:latest 
-        container_name: mysqldb
-        restart: always
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
         environment:
-          MYSQL_ROOT_PASSWORD: iLuvData4ever<3
-          MYSQL_DATABASE: bookstore
-          MYSQL_USER: sa
-          MYSQL_PASSWORD: iLuvData4ever<3
+            SA_PASSWORD: iLuvBooks4ever<3
+            ACCEPT_EULA: "Y"
         ports:
-          - "3306:3306"  
+            - "1401:1433"
         volumes:
-          - ./mysql-data:/var/lib/mysql
+            - ./mssql:/var/opt/mssql/data
+        networks:
+            - bookstore-network
     
     redis:
         image: redis:latest
