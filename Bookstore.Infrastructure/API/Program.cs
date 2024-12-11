@@ -1,4 +1,11 @@
 
+using API.Contexts;
+using API.Repositories;
+using Bookstore.Core.Interfaces;
+using Bookstore.Core.Models;
+using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
+
 namespace API
 {
     public class Program
@@ -16,6 +23,33 @@ namespace API
                                .AllowAnyMethod()
                                .AllowAnyHeader();
                     });
+            });
+
+            builder.Services.AddMemoryCache();
+
+            builder.Services.AddScoped<BookRepository>();
+            builder.Services.AddScoped<IRelationalRepository<Book>, CachedBookRepository>();
+
+            //builder.Services.AddTransient<AuthorRepository>();
+            //builder.Services.AddTransient<INoSQLRepository<Author>, CachedAuthorRepository>();
+
+
+
+            builder.Services.AddDbContext<RelationalDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("BookstoreConnection"), sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null
+                    );
+                });
+            });
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var redisConnection = builder.Configuration.GetConnectionString("RedisConnection");
+                return ConnectionMultiplexer.Connect(redisConnection);
             });
 
             builder.Services.AddControllers();
