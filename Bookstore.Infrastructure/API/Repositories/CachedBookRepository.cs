@@ -34,9 +34,9 @@ public class CachedBookRepository : IRelationalRepository<Book>
         });
     }
 
-    public Task<IEnumerable<Book>> GetAll()
+    public async Task<IEnumerable<Book>> GetAll()
     {
-        throw new NotImplementedException();
+        return await _decorated.GetAll();
     }
 
     public async Task<Book> Post(Book entry)

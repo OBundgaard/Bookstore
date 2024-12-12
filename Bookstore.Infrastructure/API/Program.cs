@@ -27,12 +27,20 @@ namespace API
 
             builder.Services.AddMemoryCache();
 
+            builder.Services.AddScoped<AuthorRepository>();
+            //builder.Services.AddScoped<INoSQLRepository<Author>, CachedAuthorRepository>();
+
             builder.Services.AddScoped<BookRepository>();
             builder.Services.AddScoped<IRelationalRepository<Book>, CachedBookRepository>();
 
-            //builder.Services.AddTransient<AuthorRepository>();
-            //builder.Services.AddTransient<INoSQLRepository<Author>, CachedAuthorRepository>();
+            builder.Services.AddScoped<CustomerRepository>();
+            builder.Services.AddScoped<IRelationalRepository<Customer>, CachedCustomerRepository>();
 
+            builder.Services.AddScoped<OrderRepository>();
+            //builder.Services.AddScoped<IRelationalRepository<Order>, CachedOrderRepository>();
+
+            builder.Services.AddScoped<StockLevelRepository>();
+            //builder.Services.AddScoped<INoSQLRepository<StockLevel>, CachedStockLevelRepository>();
 
 
             builder.Services.AddDbContext<RelationalDbContext>(options =>
