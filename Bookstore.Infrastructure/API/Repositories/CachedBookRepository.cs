@@ -16,9 +16,9 @@ public class CachedBookRepository : IRelationalRepository<Book>
 
     }
 
-    public Task Delete(int id)
+    public async Task Delete(int id)
     {
-        throw new NotImplementedException();
+        await _decorated.Delete(id);
     }
 
     public async Task<Book> Get(int id)
@@ -44,8 +44,8 @@ public class CachedBookRepository : IRelationalRepository<Book>
         return await _decorated.Post(entry);
     }
 
-    public Task<Book> Put(Book entry)
+    public async Task<Book> Put(Book entry)
     {
-        throw new NotImplementedException();
+        return await _decorated.Put(entry);
     }
 }

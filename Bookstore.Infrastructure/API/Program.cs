@@ -28,7 +28,7 @@ namespace API
             builder.Services.AddMemoryCache();
 
             builder.Services.AddScoped<AuthorRepository>();
-            //builder.Services.AddScoped<INoSQLRepository<Author>, CachedAuthorRepository>();
+            builder.Services.AddScoped<INoSQLRepository<Author>, CachedAuthorRepository>();
 
             builder.Services.AddScoped<BookRepository>();
             builder.Services.AddScoped<IRelationalRepository<Book>, CachedBookRepository>();
@@ -37,10 +37,10 @@ namespace API
             builder.Services.AddScoped<IRelationalRepository<Customer>, CachedCustomerRepository>();
 
             builder.Services.AddScoped<OrderRepository>();
-            //builder.Services.AddScoped<IRelationalRepository<Order>, CachedOrderRepository>();
+            builder.Services.AddScoped<IRelationalRepository<Bookstore.Core.Models.Order>, CachedOrderRepository>();
 
             builder.Services.AddScoped<StockLevelRepository>();
-            //builder.Services.AddScoped<INoSQLRepository<StockLevel>, CachedStockLevelRepository>();
+            builder.Services.AddScoped<INoSQLRepository<StockLevel>, CachedStockLevelRepository>();
 
 
             builder.Services.AddDbContext<RelationalDbContext>(options =>
